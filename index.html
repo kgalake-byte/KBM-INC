@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KBM SYSTEMS</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container" id="login-container">
+        <div class="login-form">
+            <h1><i class="fas fa-shield-alt"></i> KBM SYSTEMS</h1>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username"><i class="fas fa-user"></i> Username</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="btn">Login <i class="fas fa-sign-in-alt"></i></button>
+            </form>
+        </div>
+    </div>
+
+    <div class="dashboard" id="dashboard" style="display: none;">
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1><i class="fas fa-shield-alt"></i> KBM SYSTEMS Dashboard</h1>
+            </div>
+            <div class="header-right">
+                <span id="current-time"></span>
+                <span id="current-user"></span>
+                <button id="logout-btn" class="btn btn-sm">Logout <i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </header>
+
+        <div class="dashboard-content">
+            <nav class="sidebar">
+                <ul>
+                    <li class="active" data-tab="alarm-monitor"><i class="fas fa-bell"></i> Alarm Monitor</li>
+                    <li data-tab="customer-management"><i class="fas fa-users"></i> Customer Management</li>
+                    <li data-tab="dispatch"><i class="fas fa-car"></i> Dispatch</li>
+                    <li data-tab="reports"><i class="fas fa-chart-bar"></i> Reports</li>
+                </ul>
+            </nav>
+
+            <main class="main-content">
+                <!-- Alarm Monitor Tab -->
+                <div class="tab-content active" id="alarm-monitor">
+                    <h2><i class="fas fa-bell"></i> Active Alarms</h2>
+                    <div class="alarm-controls">
+                        <button id="silence-all-btn" class="btn btn-danger">Silence All <i class="fas fa-volume-mute"></i></button>
+                        <button id="ack-all-btn" class="btn">Acknowledge All <i class="fas fa-check"></i></button>
+                    </div>
+                    <div class="alarm-grid" id="alarm-grid">
+                        <!-- Alarm cards will be inserted here by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Customer Management Tab -->
+                <div class="tab-content" id="customer-management">
+                    <h2><i class="fas fa-users"></i> Customer Management</h2>
+                    <div class="customer-controls">
+                        <button id="add-customer-btn" class="btn">Add Customer <i class="fas fa-plus"></i></button>
+                        <div class="search-box">
+                            <input type="text" id="customer-search" placeholder="Search customers...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                    </div>
+                    <table class="customer-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Address</th>
+                                <th>Phone</th>
+                                <th>Alarm Type</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customer-table-body">
+                            <!-- Customer rows will be inserted here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Dispatch Tab -->
+                <div class="tab-content" id="dispatch">
+                    <h2><i class="fas fa-car"></i> Dispatch Management</h2>
+                    <div class="dispatch-controls">
+                        <button id="add-unit-btn" class="btn">Add Response Unit <i class="fas fa-plus"></i></button>
+                        <button id="dispatch-history-btn" class="btn">View History <i class="fas fa-history"></i></button>
+                    </div>
+                    <div class="dispatch-grid">
+                        <div class="dispatch-map">
+                            <h3><i class="fas fa-map-marked-alt"></i> Unit Locations</h3>
+                            <div id="map" class="map-container">
+                                <!-- Map will be rendered here -->
+                                <div class="map-placeholder">
+                                    <i class="fas fa-map"></i>
+                                    <p>Interactive map would display here</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="unit-status">
+                            <h3><i class="fas fa-car-side"></i> Response Units</h3>
+                            <table class="unit-table">
+                                <thead>
+                                    <tr>
+                                        <th>Unit ID</th>
+                                        <th>Status</th>
+                                        <th>Location</th>
+                                        <th>Assigned To</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="unit-table-body">
+                                    <!-- Unit rows will be inserted here by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports Tab -->
+                <div class="tab-content" id="reports">
+                    <h2><i class="fas fa-chart-bar"></i> Reports</h2>
+                    <div class="report-controls">
+                        <select id="report-type">
+                            <option value="alarms">Alarm Activity</option>
+                            <option value="response">Response Times</option>
+                            <option value="customers">Customer Activity</option>
+                        </select>
+                        <input type="date" id="report-start-date">
+                        <input type="date" id="report-end-date">
+                        <button id="generate-report-btn" class="btn">Generate Report <i class="fas fa-file-export"></i></button>
+                    </div>
+                    <div class="report-results" id="report-results">
+                        <p>Select report parameters and click "Generate Report"</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="alarm-details-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="alarm-modal-title">Alarm Details</h2>
+            <div class="modal-body" id="alarm-modal-body">
+                <!-- Alarm details will be inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button id="dispatch-unit-btn" class="btn">Dispatch Unit <i class="fas fa-car"></i></button>
+                <button id="ack-alarm-btn" class="btn">Acknowledge <i class="fas fa-check"></i></button>
+                <button id="false-alarm-btn" class="btn btn-danger">Mark as False Alarm <i class="fas fa-times"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="customer-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="customer-modal-title">Add New Customer</h2>
+            <div class="modal-body">
+                <form id="customer-form">
+                    <input type="hidden" id="customer-id">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customer-name">Full Name</label>
+                            <input type="text" id="customer-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="customer-phone">Phone</label>
+                            <input type="tel" id="customer-phone" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customer-address">Address</label>
+                            <input type="text" id="customer-address" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="customer-email">Email</label>
+                            <input type="email" id="customer-email">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customer-alarm-type">Alarm Type</label>
+                            <select id="customer-alarm-type" required>
+                                <option value="residential">Residential</option>
+                                <option value="commercial">Commercial</option>
+                                <option value="panic">Panic Button</option>
+                                <option value="medical">Medical Alert</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="customer-monitoring-plan">Monitoring Plan</label>
+                            <select id="customer-monitoring-plan" required>
+                                <option value="basic">Basic</option>
+                                <option value="standard">Standard</option>
+                                <option value="premium">Premium</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="customer-notes">Notes</label>
+                        <textarea id="customer-notes" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="customer-active"> Active Customer
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="save-customer-btn" class="btn">Save Customer <i class="fas fa-save"></i></button>
+                <button id="cancel-customer-btn" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="dispatch-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Dispatch Response Unit</h2>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="dispatch-alarm-id">Alarm ID</label>
+                    <input type="text" id="dispatch-alarm-id" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="dispatch-customer">Customer</label>
+                    <input type="text" id="dispatch-customer" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="dispatch-address">Address</label>
+                    <input type="text" id="dispatch-address" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="dispatch-unit">Select Response Unit</label>
+                    <select id="dispatch-unit">
+                        <!-- Units will be populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="dispatch-priority">Priority</label>
+                    <select id="dispatch-priority">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                        <option value="critical">Critical</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="dispatch-notes">Dispatch Notes</label>
+                    <textarea id="dispatch-notes" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="confirm-dispatch-btn" class="btn">Confirm Dispatch <i class="fas fa-paper-plane"></i></button>
+                <button id="cancel-dispatch-btn" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="unit-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="unit-modal-title">Add Response Unit</h2>
+            <div class="modal-body">
+                <form id="unit-form">
+                    <input type="hidden" id="unit-id">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="unit-name">Unit Name</label>
+                            <input type="text" id="unit-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="unit-type">Unit Type</label>
+                            <select id="unit-type" required>
+                                <option value="armed">Armed Response</option>
+                                <option value="patrol">Patrol Vehicle</option>
+                                <option value="medical">Medical Response</option>
+                                <option value="supervisor">Supervisor</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="unit-operator">Operator</label>
+                            <input type="text" id="unit-operator" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="unit-status">Status</label>
+                            <select id="unit-status" required>
+                                <option value="available">Available</option>
+                                <option value="dispatched">Dispatched</option>
+                                <option value="maintenance">Maintenance</option>
+                                <option value="offline">Offline</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="unit-notes">Notes</label>
+                        <textarea id="unit-notes" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="save-unit-btn" class="btn">Save Unit <i class="fas fa-save"></i></button>
+                <button id="cancel-unit-btn" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
